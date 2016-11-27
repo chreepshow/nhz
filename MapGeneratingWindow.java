@@ -83,6 +83,7 @@ public class MapGeneratingWindow extends JFrame {
 		JLabel playerLabel = new JLabel("Tiles of this player: ");
 
 		playersBox = new JComboBox();
+		playersBox.addItem("Empty");
 		playersBox.addItem("1. Player");
 		playersBox.addItem("2. Player");
 		playersBox.addItem("3. Player");
@@ -155,13 +156,14 @@ public class MapGeneratingWindow extends JFrame {
 							map.get(row).get(column).setFillColor(Color.GRAY);
 							map.get(row).get(column).makeThisInGame();
 							currentHex=map.get(row).get(column);
-							
 							wasValidSelection = true;
 							selectedPolygon = currentp;
 						}
 					}
 				if (wasValidSelection) {
-					currentHex.setOwnerID(Integer.parseInt(playersBox.getSelectedItem().toString().substring(0, 1)));
+					if(!playersBox.getSelectedItem().toString().equals("Empty")){
+						currentHex.setOwnerID(Integer.parseInt(playersBox.getSelectedItem().toString().substring(0, 1)));
+					}
 					pw.println(currentHex.getCoordX() + " " +currentHex.getCoordY()+" "+currentHex.ownerID());
 					pw.flush();
 					firstClicked = true;
