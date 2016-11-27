@@ -16,12 +16,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class MainMenu extends JFrame implements ActionListener {
 
 	public static void main(String[] args) {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		new MainMenu().setVisible(true);
 	}
 

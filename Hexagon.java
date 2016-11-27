@@ -14,6 +14,7 @@ public class Hexagon {
 	boolean standsOn;
 	boolean defended;
 	boolean inGame = false;
+	private int ownerID;
 
 	public Hexagon(int coordX, int coordY, int w) {
 
@@ -86,7 +87,12 @@ public class Hexagon {
 	public Color getFillColor() {
 		return fillColor;
 	}
-
+	public int ownerID(){
+		return ownerID;
+	}
+	public void setOwnerID(int x){
+		ownerID=x;
+	}
 	/*
 	 * public Player whooseHex(){
 	 * 

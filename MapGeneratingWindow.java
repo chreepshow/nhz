@@ -2,6 +2,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,20 +28,22 @@ import javax.swing.JPanel;
 public class MapGeneratingWindow extends JFrame {
 	public static final int screenX = 1440;
 	public static final int screenY = 900;
+	
 	public static int width;
 	public static int maxPiecesHorizontal, maxPiecesVertical;
+	
 	public static List<ArrayList<Hexagon>> map = new ArrayList<ArrayList<Hexagon>>();
 	private Polygon selectedPolygon;
+	
 	private boolean initialized = false;
 	private boolean firstClicked = false;
+	
 	FileWriter fw;
 	PrintWriter pw;
 	String filename;
+	
 	MyComponent myComp = new MyComponent();
-
-	private int x = screenX / 2, y = screenY / 2, r = width;
-	private boolean selected = false;
-	private int gx, gy;
+	
 
 	public MapGeneratingWindow(String filen) throws IOException {
 
@@ -50,12 +53,13 @@ public class MapGeneratingWindow extends JFrame {
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		// setBackground(new Color(170,101,75));
-
+		
+		
 		filename = filen;
 
 		fw = new FileWriter(filename);
 		pw = new PrintWriter(fw, true);
-
+		
 		add(myComp);
 		mapInit();
 		subMenu();
@@ -110,7 +114,6 @@ public class MapGeneratingWindow extends JFrame {
 			// if (getBufferStrategy() == null)
 			// createBufferStrategy(2);
 			// g = getBufferStrategy().getDrawGraphics();
-
 			for (int row = 0; row < maxPiecesHorizontal; ++row) {
 				for (int column = 0; column < maxPiecesVertical; ++column) {
 					Hexagon current = map.get(row).get(column);
@@ -120,6 +123,8 @@ public class MapGeneratingWindow extends JFrame {
 					g.fillPolygon(tmp);
 					g.setColor(current.getBorderColor());
 					g.drawPolygon(tmp);
+					Rectangle rect = selectedPolygon.getBounds();
+					//g.drawString(playersBox.getSelectedItem().toString().substring(0, 0), rect.x+rect.width, rect.y+rect.height);
 					// }
 				}
 			}
@@ -136,7 +141,8 @@ public class MapGeneratingWindow extends JFrame {
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			if (e.getButton() == MouseEvent.BUTTON1) {
-				firstClicked = true;
+				Hexagon currentHex;
+				//firstClicked = true;
 				boolean wasValidSelection = false;
 				Polygon currentp = new Polygon();
 				for (int row = 0; row < maxPiecesHorizontal; ++row)
@@ -145,20 +151,15 @@ public class MapGeneratingWindow extends JFrame {
 						if (currentp.contains(e.getPoint())) {
 							map.get(row).get(column).setFillColor(Color.GRAY);
 							map.get(row).get(column).makeThisInGame();
+							currentHex=map.get(row).get(column);
 							pw.println(row + " " + column);
 							pw.flush();
 							wasValidSelection = true;
 							selectedPolygon = currentp;
 						}
-						if (currentp.contains(e.getPoint()) && map.get(row).get(column).isThisInGame()) {
-
-						}
 					}
 				if (wasValidSelection) {
-					selected = true;
-					repaint();
-				} else {
-					selected = false;
+					
 					repaint();
 				}
 			}
