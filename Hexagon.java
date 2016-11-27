@@ -5,6 +5,7 @@ import java.math.*;
 
 public class Hexagon {
 	private int origoX, origoY;
+	private int coordx, coordy;
 	private int width;
 	private int[] x = new int[6];
 	private int[] y = new int[6];
@@ -19,6 +20,8 @@ public class Hexagon {
 	public Hexagon(int coordX, int coordY, int w) {
 
 		this.width = w;
+		coordx = coordX;
+		coordy = coordY;
 		origoX = (int) (0 + 75); // about the size of the main label, this is
 									// needed in order to see the first column
 									// correctly
@@ -67,6 +70,12 @@ public class Hexagon {
 	public int[] getY() {
 		return y;
 	}
+	public int getCoordX(){
+		return coordx;
+	}
+	public int getCoordY(){
+		return coordy;
+	}
 
 	public void makeThisInGame() {
 		inGame = true;
@@ -87,7 +96,7 @@ public class Hexagon {
 	public Color getFillColor() {
 		return fillColor;
 	}
-	public int ownerID(){
+	public Integer ownerID(){
 		return ownerID;
 	}
 	public void setOwnerID(int x){

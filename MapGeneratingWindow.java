@@ -42,6 +42,7 @@ public class MapGeneratingWindow extends JFrame {
 	PrintWriter pw;
 	String filename;
 	
+	JComboBox playersBox;
 	MyComponent myComp = new MyComponent();
 	
 
@@ -53,16 +54,16 @@ public class MapGeneratingWindow extends JFrame {
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		// setBackground(new Color(170,101,75));
-		
-		
+		mapInit();
+		subMenu();
 		filename = filen;
 
 		fw = new FileWriter(filename);
 		pw = new PrintWriter(fw, true);
 		
 		add(myComp);
-		mapInit();
-		subMenu();
+		
+		
 
 	}
 
@@ -81,7 +82,7 @@ public class MapGeneratingWindow extends JFrame {
 	public void subMenu() {
 		JLabel playerLabel = new JLabel("Tiles of this player: ");
 
-		JComboBox playersBox = new JComboBox();
+		playersBox = new JComboBox();
 		playersBox.addItem("1. Player");
 		playersBox.addItem("2. Player");
 		playersBox.addItem("3. Player");
@@ -123,8 +124,10 @@ public class MapGeneratingWindow extends JFrame {
 					g.fillPolygon(tmp);
 					g.setColor(current.getBorderColor());
 					g.drawPolygon(tmp);
-					Rectangle rect = selectedPolygon.getBounds();
-					//g.drawString(playersBox.getSelectedItem().toString().substring(0, 0), rect.x+rect.width, rect.y+rect.height);
+					if(firstClicked && current.ownerID() != 0){
+						Rectangle rect = new Rectangle(tmp.getBounds());
+						g.drawString(current.ownerID().toString(), rect.x+width/2, rect.y+width/2);
+					}
 					// }
 				}
 			}
@@ -141,8 +144,8 @@ public class MapGeneratingWindow extends JFrame {
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			if (e.getButton() == MouseEvent.BUTTON1) {
-				Hexagon currentHex;
-				//firstClicked = true;
+				Hexagon currentHex = null;
+				
 				boolean wasValidSelection = false;
 				Polygon currentp = new Polygon();
 				for (int row = 0; row < maxPiecesHorizontal; ++row)
@@ -152,14 +155,16 @@ public class MapGeneratingWindow extends JFrame {
 							map.get(row).get(column).setFillColor(Color.GRAY);
 							map.get(row).get(column).makeThisInGame();
 							currentHex=map.get(row).get(column);
-							pw.println(row + " " + column);
-							pw.flush();
+							
 							wasValidSelection = true;
 							selectedPolygon = currentp;
 						}
 					}
 				if (wasValidSelection) {
-					
+					currentHex.setOwnerID(Integer.parseInt(playersBox.getSelectedItem().toString().substring(0, 1)));
+					pw.println(currentHex.getCoordX() + " " +currentHex.getCoordY()+" "+currentHex.ownerID());
+					pw.flush();
+					firstClicked = true;
 					repaint();
 				}
 			}
