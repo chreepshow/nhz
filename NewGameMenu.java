@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -108,16 +109,23 @@ public class NewGameMenu extends JFrame implements ActionListener {
 					op.showMessageDialog(this, "Please choose a color for every player.");
 				} else {
 					this.setVisible(false);
-					GameWindow gw = new GameWindow();
-					gw.setVisible(true);
-					for (int j = 0; j < 6; ++j) {
+					GameWindow gw;
+					try {
+						gw = new GameWindow();
 
-						if (playersBox[j].getSelectedItem().toString().equals("Player" + (j + 1))) {
-							gw.addPlayer(j + 1, colorsField[j].getBackground(), false);
+						gw.setVisible(true);
+						for (int j = 0; j < 6; ++j) {
+
+							if (playersBox[j].getSelectedItem().toString().equals("Player" + (j + 1))) {
+								gw.addPlayer(j + 1, colorsField[j].getBackground(), false);
+							}
+							if (playersBox[j].getSelectedItem().toString().equals("AI" + (j + 1))) {
+								gw.addPlayer(j + 1, colorsField[j].getBackground(), true);
+							}
 						}
-						if (playersBox[j].getSelectedItem().toString().equals("AI" + (j + 1))) {
-							gw.addPlayer(j + 1, colorsField[j].getBackground(), true);
-						}
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
 			} else {
