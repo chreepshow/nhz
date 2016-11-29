@@ -15,15 +15,16 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 public class MainMenu extends JFrame implements ActionListener {
 
-	public static void main(String[] args) {
-		new MainMenu().setVisible(true);
+	public static void main(String[] args) throws IOException {
+		//new MainMenu().setVisible(true);
+		new GameWindow().setVisible(true);
 	}
 
 	MainMenu() {
 		setSize(400, 300);
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-
+		
 		JButton newGameButton = new JButton("New Game");
 		newGameButton.addActionListener(this);
 		newGameButton.setPreferredSize(new Dimension(20, 50));
