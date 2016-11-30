@@ -7,14 +7,21 @@ public class Hexagon {
 	private int origoX, origoY;
 	private int coordx, coordy;
 	private int width;
+
 	private int[] x = new int[6];
 	private int[] y = new int[6];
 	private double centerX, centerY, h;
+
 	private Color fillColor = Color.WHITE;
 	private Color borderColor = Color.DARK_GRAY;
-	boolean standsOn;
-	boolean defended;
-	boolean inGame = false;
+
+	private boolean standsOn = false;
+	private boolean defended = false;
+	private boolean inGame = false;
+	private boolean hq = false;
+
+	private Placable thatStandsOn;
+
 	private int ownerID;
 
 	public Hexagon(int coordX, int coordY, int w) {
@@ -70,10 +77,12 @@ public class Hexagon {
 	public int[] getY() {
 		return y;
 	}
-	public int getCoordX(){
+
+	public int getCoordX() {
 		return coordx;
 	}
-	public int getCoordY(){
+
+	public int getCoordY() {
 		return coordy;
 	}
 
@@ -96,11 +105,25 @@ public class Hexagon {
 	public Color getFillColor() {
 		return fillColor;
 	}
-	public Integer ownerID(){
+
+	public Integer ownerID() {
 		return ownerID;
 	}
-	public void setOwnerID(int x){
-		ownerID=x;
+
+	public void setOwnerID(int x) {
+		ownerID = x;
+	}
+
+	public void makeThisStandOnIt(Placable p) {
+		thatStandsOn = p;
+		standsOn = true;
+		p.makeImpact();
+	}
+	public boolean isThisHeadquarter(){
+		return hq;
+	}
+	public void setHeadquarter(){
+		hq = true;
 	}
 	/*
 	 * public Player whooseHex(){
@@ -115,4 +138,5 @@ public class Hexagon {
 	 * 
 	 * }
 	 */
+
 }

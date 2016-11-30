@@ -29,15 +29,17 @@ public class GameWindow extends JFrame implements MouseListener, MouseMotionList
 
 	public static List<ArrayList<Hexagon>> map = new ArrayList<ArrayList<Hexagon>>();
 	private final int itemsNumber = 5;
-	
+
 	private Rectangle[] itemChooser = new Rectangle[itemsNumber];
 
 	private BufferedImage[] itemsImages = new BufferedImage[itemsNumber];
-	private BufferedImage[] itemsImagesMini= new BufferedImage[itemsNumber];
-	
+	private BufferedImage[] itemsImagesMini = new BufferedImage[itemsNumber];
+	private BufferedImage hq;
+
 	private boolean mouseInTheItemChooser = false;
-	private int whichItem; //which item in the itemChooser
-	private boolean itemSelected = false; // true if the user clicked on any item
+	private int whichItem; // which item in the itemChooser
+	private boolean itemSelected = false; // true if the user clicked on any
+											// item
 
 	FileReader fr;
 	BufferedReader br;
@@ -56,19 +58,21 @@ public class GameWindow extends JFrame implements MouseListener, MouseMotionList
 
 	@Override
 	public void paint(Graphics g) {
-		// double buffering 
+		// double buffering
 		if (getBufferStrategy() == null)
 			createBufferStrategy(2);
 		g = getBufferStrategy().getDrawGraphics();
-		
-		//Drawing the map
-		mergeMap();
+
+		// Drawing the map
+
 		try {
 			init();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		mergeMap();
+		placeHeadquarters();
 		for (int row = 0; row < maxPiecesHorizontal; ++row) {
 			for (int column = 0; column < maxPiecesVertical; ++column) {
 				Hexagon current = map.get(row).get(column);
@@ -78,17 +82,24 @@ public class GameWindow extends JFrame implements MouseListener, MouseMotionList
 					g.fillPolygon(tmp);
 					g.setColor(current.getBorderColor());
 					g.drawPolygon(tmp);
+					if (current.isThisHeadquarter()) {
+						Rectangle tmpRect = tmp.getBounds();
+						g.drawImage(hq, (int) tmpRect.getX(), (int) tmpRect.getY(), this);
+					}
+					Rectangle rect = new Rectangle(tmp.getBounds());
+					g.drawString(current.ownerID().toString(), rect.x+width/2, rect.y+width/2);
 				}
 			}
 		}
 		/*
-		 * Handling the item selection part. (this is on south of the frame)
+		 * Handling the item selection part. (this is on the bottom of the
+		 * frame)
 		 */
 		for (int i = 0; i < itemsNumber; ++i) {
 			g.setColor(Color.LIGHT_GRAY);
 			g.fillRect((int) itemChooser[i].getX(), (int) itemChooser[i].getY(), (int) itemChooser[i].getWidth(),
 					(int) itemChooser[i].getHeight());
-			if (mouseInTheItemChooser) {
+			if (mouseInTheItemChooser || itemSelected) {
 				g.setColor(new Color(255, 255, 204));
 				g.fillRect((int) itemChooser[whichItem].getX(), (int) itemChooser[whichItem].getY(),
 						(int) itemChooser[whichItem].getWidth(), (int) itemChooser[whichItem].getHeight());
@@ -97,14 +108,15 @@ public class GameWindow extends JFrame implements MouseListener, MouseMotionList
 			g.drawRect((int) itemChooser[i].getX(), (int) itemChooser[i].getY(), (int) itemChooser[i].getWidth(),
 					(int) itemChooser[i].getHeight());
 		}
-		g.drawImage(itemsImages[0], (int) itemChooser[0].getX() + 5, (int) itemChooser[0].getY() + 15, this);
+
+		g.drawImage(itemsImages[0], (int) itemChooser[0].getX(), (int) itemChooser[0].getY() + 15, this);
 		g.drawImage(itemsImages[1], (int) itemChooser[1].getX() + 5, (int) itemChooser[1].getY() + 10, this);
 		g.drawImage(itemsImages[2], (int) itemChooser[2].getX() + 5, (int) itemChooser[2].getY() + 5, this);
 		g.drawImage(itemsImages[3], (int) itemChooser[3].getX() + 5, (int) itemChooser[3].getY() + 5, this);
 		g.drawImage(itemsImages[4], (int) itemChooser[4].getX() + 5, (int) itemChooser[4].getY() + 5, this);
-		//Item selection handling ends here.
-		
-		//Double buffering
+		// Item selection handling ends here.
+
+		// Double buffering
 		getBufferStrategy().show();
 		g.dispose();
 	}
@@ -139,7 +151,7 @@ public class GameWindow extends JFrame implements MouseListener, MouseMotionList
 			map.get(coordX).get(coordY).makeThisInGame();
 			map.get(coordX).get(coordY).setOwnerID(playerID);
 		}
-		for (int i = 0; i < itemsNumber; ++i) {// rects width: 50 height: 100
+		for (int i = 0; i < itemsNumber; ++i) {
 			int rectWidth = 60;
 			int rectHeight = 100;
 			itemChooser[i] = new Rectangle(getWidth() / 2 - itemsNumber / 2 * rectWidth + i * rectWidth,
@@ -151,16 +163,22 @@ public class GameWindow extends JFrame implements MouseListener, MouseMotionList
 			itemsImages[2] = ImageIO.read(new File("peasant_noback.png"));
 			itemsImages[3] = ImageIO.read(new File("war1_noback.png"));
 			itemsImages[4] = ImageIO.read(new File("war2_noback.png"));
-
+			hq = ImageIO.read(new File("hq_mini_noback.png"));
 		} catch (IOException e) {
 		}
 	}
 
+	/*
+	 * This need to be done, because we need to set the valid player spots. We
+	 * have places for max 6 players but it's not sure that all the places are
+	 * filled.
+	 */
 	public void mergeMap() {
 		Hexagon currentHex;
-		boolean playerWithThatIdExists = false;
+
 		for (int row = 0; row < maxPiecesHorizontal; ++row) {
 			for (int column = 0; column < maxPiecesVertical; ++column) {
+				boolean playerWithThatIdExists = false;
 				currentHex = map.get(row).get(column);
 				if (currentHex.ownerID() != 0) {
 					for (int k = 0; k < players.size(); ++k) {
@@ -177,6 +195,36 @@ public class GameWindow extends JFrame implements MouseListener, MouseMotionList
 			}
 		}
 	}
+	//ezt még azért nézzük át újra
+	public void placeHeadquarters() {
+		int row = 0;
+		int column = 0;
+		int found = 0;
+		for (int i = 0; i < players.size(); ++i) {
+			row = 0;
+			boolean hit = false;
+			while (row < maxPiecesHorizontal && !hit) {
+				column = 0;
+				while (column < maxPiecesVertical && !hit) {
+					Hexagon currentHex = map.get(row).get(column);
+					if (currentHex.ownerID() != 0) {
+						if (players.get(i).getID() == currentHex.ownerID()) {
+							System.out.println(players.get(i).getID());
+							currentHex.setHeadquarter();
+							hit = true;
+						}
+					}
+					++column;
+				}
+				++row;
+			}
+		}
+
+	}
+
+	private boolean gameIsEnded() {
+		return (players.size() <= 1) ? true : false;
+	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
@@ -186,19 +234,23 @@ public class GameWindow extends JFrame implements MouseListener, MouseMotionList
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
+		// Handling the Item Chooser part
 		boolean contains = false;
-		for (int i = 0; i < itemsNumber; ++i) {
+		int i;
+		for (i = 0; i < itemsNumber; ++i) {
 			if (itemChooser[i].contains(e.getPoint())) {
-				whichItem = i;
 				contains = true;
+				break;
 			}
 		}
-		if (contains) {
+		if (contains && !itemSelected) {
 			mouseInTheItemChooser = true;
-		} else if(!itemSelected) {
+			whichItem = i;
+		} else if (!itemSelected) {
 			mouseInTheItemChooser = false;
 		}
+		// end of it
+
 		repaint();
 	}
 
@@ -227,21 +279,28 @@ public class GameWindow extends JFrame implements MouseListener, MouseMotionList
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		boolean contains = false;
-		for (int i = 0; i < itemsNumber; ++i) {
-			if (itemChooser[i].contains(e.getPoint())) {
-				whichItem = i;
-				contains = true;
+	public void mouseReleased(MouseEvent e1) {
+		if (e1.getButton() == MouseEvent.BUTTON1) {
+
+			// Handling the Item Chooser part
+			boolean contains = false;
+			int i;
+			for (i = 0; i < itemsNumber; ++i) {
+				if (itemChooser[i].contains(e1.getPoint())) {
+					contains = true;
+					break;
+				}
 			}
+			if (contains) {
+				mouseInTheItemChooser = false;
+				itemSelected = true;
+				whichItem = i;
+			} else {
+				itemSelected = false;
+				mouseInTheItemChooser = false;
+			}
+			// end of it
+			repaint();
 		}
-		if (contains) {
-			mouseInTheItemChooser = true;
-			itemSelected = true;
-		} else{
-			itemSelected = false;
-		}
-		repaint();
 	}
 }

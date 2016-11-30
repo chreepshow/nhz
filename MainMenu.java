@@ -16,8 +16,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class MainMenu extends JFrame implements ActionListener {
 
 	public static void main(String[] args) throws IOException {
-		//new MainMenu().setVisible(true);
-		new GameWindow().setVisible(true);
+		new MainMenu().setVisible(true);
+		//new GameWindow().setVisible(true);
 	}
 
 	MainMenu() {

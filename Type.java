@@ -1,0 +1,4 @@
+
+public enum Type {
+	HOUSE, TOWER, PEASANT, WARRIOR1, WARRIOR2
+}
